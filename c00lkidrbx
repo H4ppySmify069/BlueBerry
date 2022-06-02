@@ -1,0 +1,447 @@
+--[[
+Made by c00lkid#9186 This Cheat is Free and Pasted :-)
+--]]
+
+---------------------------------------------------
+print ("BlueBerry.gg Loading... Please Wait Few Seconds!")
+
+wait(1.2)
+game.StarterGui:SetCore("SendNotification", {
+Title = "BlueBerry.gg"; -- 
+Text = "BlueBerry Loaded!"; -- 
+Icon = "rbxassetid://1297630667"; -- t
+Duration = 5; -- 
+})
+
+local library = loadstring(game:HttpGet'https://raw.githubusercontent.com/CatzCode/PikaHub/main/Libraries/UI/bruh.lua')()
+library:CreateWatermark("BlueBerry.gg")
+library.theme.accentcolor = Color3.fromRGB(0, 0, 0)
+library.theme.accentcolor2 = Color3.fromRGB(0, 0, 0)
+library.theme.topheight = 45
+library.theme.TextColor = Color3.fromRGB(0, 0, 0)
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/WetCheezit/Bracket-V2/main/src.lua"))()
+local ESP = loadstring(game:HttpGet("https://pastebin.com/raw/6XRq4tSS"))()
+local Window, MainGUI = Library:CreateWindow("BlueBerry.gg | Version:0.0.1")
+
+local Tab1 = Window:CreateTab("Legit")
+local Tab2 = Window:CreateTab("Visuals")
+local Tab3 = Window:CreateTab("Misc")
+
+local Groupbox1 = Tab1:CreateGroupbox("Aimbot", "Left")
+local Groupbox2 = Tab2:CreateGroupbox("ESP", "Left")
+local Groupbox3 = Tab3:CreateGroupbox("Others", "Left")
+local Groupbox4 = Tab3:CreateGroupbox("Game Hooks", "Right")
+
+-- Groupbox 1
+
+local ExampleToggle = Groupbox1:CreateToggle("Silent Aim", function()
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    local mouse = LocalPlayer:GetMouse()
+    local Camera = workspace.CurrentCamera
+    local Debris = game:GetService("Debris")
+    local UserInputService = game:GetService("UserInputService")
+    local target = false
+    local RunService = game:GetService("RunService")
+    
+    local features = {
+    silentaim = true;
+    fov = 360;
+    }
+    
+    function getnearest()
+    local nearestmagnitude = math.huge
+    local nearestenemy = nil
+    local vector = nil
+    for i,v in next, Players:GetChildren() do
+    if v ~= Players.LocalPlayer then
+    if v.Character and  v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+    local vector, onScreen = Camera:WorldToScreenPoint(v.Character["HumanoidRootPart"].Position)
+    if onScreen then
+    local ray = Ray.new(
+    Camera.CFrame.p,
+    (v.Character["Head"].Position-Camera.CFrame.p).unit*500
+    )
+    local ignore = {
+    LocalPlayer.Character,
+    }
+    local hit,position,normal=workspace:FindPartOnRayWithIgnoreList(ray,ignore)
+    if hit and hit:FindFirstAncestorOfClass("Model") and Players:FindFirstChild(hit:FindFirstAncestorOfClass("Model").Name)then
+    local magnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(vector.X, vector.Y)).magnitude
+    if magnitude < nearestmagnitude and magnitude <= features["fov"] then
+    nearestenemy = v
+    nearestmagnitude = magnitude
+    end
+    end
+    end
+    end
+    end
+    end
+    return nearestenemy
+    end
+    
+    
+    local meta = getrawmetatable(game)
+    setreadonly(meta, false)
+    local oldNamecall = meta.__namecall
+    meta.__namecall = newcclosure(function(...)
+    local method = getnamecallmethod()
+    local args = {...}
+    if string.find(method,'Ray') then
+    if target then
+    args[2] = Ray.new(workspace.CurrentCamera.CFrame.Position, (target + Vector3.new(0,(workspace.CurrentCamera.CFrame.Position-target).Magnitude/500,0) - workspace.CurrentCamera.CFrame.Position).unit * 500)
+    end
+    end
+    return oldNamecall(unpack(args))
+    end)
+    
+    
+    RunService:BindToRenderStep("silentaim",1,function()
+    if UserInputService:IsMouseButtonPressed(0) and features["silentaim"] and Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") and Players.LocalPlayer.Character.Humanoid.Health > 0 then
+    local enemy = getnearest()
+    if enemy and enemy.Character and enemy.Character:FindFirstChild("Humanoid") and enemy.Character.Humanoid.Health > 0 then                
+    local vector, onScreen = Camera:WorldToScreenPoint(enemy.Character["Head"].Position)
+    local magnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(vector.X, vector.Y)).magnitude
+    target = workspace[enemy.Name]["Head"].Position
+    end
+    else
+    target = nil
+    end
+    end)
+    
+
+ end)
+
+ -- Groupbox 2
+
+local ExampleToggle2 = Groupbox2:CreateToggle("Enabled", function(value)
+    ESP:Toggle(value)
+end)
+
+local ExampleToggle3 = Groupbox2:CreateToggle("Names", function(value)
+    ESP.Names = value
+end)
+local ExampleToggle4 = Groupbox2:CreateToggle("Boxes", function(value)
+    ESP.Boxes = value
+end)
+
+local ExampleToggle5 = Groupbox2:CreateToggle("Tracers", function(value)
+    ESP.Tracers = value
+end)
+
+local LocalPlayer = game.Players.LocalPlayer
+_G.ChamsEnabled = false
+_G.ChamsColor = Color3.new(1, 0, 0)
+_G.ChamsTransparency = 0.3
+spawn(function()
+while true do
+    wait(0.1)
+    
+    spawn(function()
+        for i,v in pairs(game.Players:GetPlayers()) do
+            if v ~= LocalPlayer and v.Status.Alive.Value == true and v.Status.Team.Value ~= LocalPlayer.Status.Team.Value then
+                for i2,v2 in pairs(v.Character:GetChildren()) do
+             
+                    if v2:IsA("BasePart") and v2 ~= v.Character.PrimaryPart then
+                        if v2:FindFirstChild("Chams") then
+                            v2.Chams:Destroy()
+                        end
+                        if _G.ChamsEnabled then
+                        local BoxHandleAdornment = Instance.new("BoxHandleAdornment")
+                        BoxHandleAdornment.Name = "Chams"
+                        BoxHandleAdornment.Adornee = v2
+                        BoxHandleAdornment.Size = v2.Size
+                        BoxHandleAdornment.Color3 = _G.ChamsColor
+                        BoxHandleAdornment.AlwaysOnTop = true
+                        BoxHandleAdornment.ZIndex = 0
+                        BoxHandleAdornment.Parent = v2
+                        BoxHandleAdornment.Transparency = 0.3
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+end)
+
+local ExampleToggle6 = Groupbox2:CreateToggle("Chams", function(value)
+_G.ChamsEnabled = value
+end)
+
+local ExampleColorPicker = Groupbox2:CreateColorPicker("Chams Color", Color3.fromRGB(1, 0, 1), function(value)
+_G.ChamsColor = value
+end)
+
+local ExampleToggle7 = Groupbox2:CreateToggle("Hand Chams", function(value)
+    Blacklisted = {"Flame", "SightMark", "SightMark2A", "Tip", "Trigger"}
+
+    workspace.CurrentCamera.DescendantAdded:Connect(function(O)
+        if O:IsA("BasePart") and not table.find(Blacklisted, O.Name) then
+            spawn(function()
+                while wait() do
+                    O.Color = Color3.fromHSV((tick() % 5 / 5), 1, 1)
+                    O.Transparency = 0.8
+                    O.Material = Enum.Material.ForceField
+                end
+            end)
+        end
+    end)
+    end)
+local ExampleSlider = Groupbox2:CreateSlider("Fov Changer", 1, 120, 80, function(value)
+    workspace.CurrentCamera.FieldOfView = value
+    getsenv(game.Players.LocalPlayer.PlayerGui.Client).fieldofview = value
+end)
+
+local ExampleSlider1 = Groupbox2:CreateSlider("NightMode", 1, 20, 10, function(value)
+    game.Lighting.TimeOfDay = value
+end)
+
+local ExampleToggle8 = Groupbox2:CreateToggle("Shaders", function(value)
+    for i,v in pairs(workspace:GetDescendants()) do
+if v:IsA("Part") and Enum.Material.Grass and v.Size.Z > 500 then
+workspace.Terrain:FillBlock(v.CFrame, v.Size, Enum.Material.Grass)
+end
+end
+end)
+
+local ExampleToggle9 = Groupbox2:CreateToggle("FullBright", function(value)
+    if not _G.FullBrightExecuted then
+
+        _G.FullBrightEnabled = false
+    
+        _G.NormalLightingSettings = {
+            Brightness = game:GetService("Lighting").Brightness,
+            ClockTime = game:GetService("Lighting").ClockTime,
+            FogEnd = game:GetService("Lighting").FogEnd,
+            GlobalShadows = game:GetService("Lighting").GlobalShadows,
+            Ambient = game:GetService("Lighting").Ambient
+        }
+    
+        game:GetService("Lighting"):GetPropertyChangedSignal("Brightness"):Connect(function()
+            if game:GetService("Lighting").Brightness ~= 1 and game:GetService("Lighting").Brightness ~= _G.NormalLightingSettings.Brightness then
+                _G.NormalLightingSettings.Brightness = game:GetService("Lighting").Brightness
+                if not _G.FullBrightEnabled then
+                    repeat
+                        wait()
+                    until _G.FullBrightEnabled
+                end
+                game:GetService("Lighting").Brightness = 1
+            end
+        end)
+    
+        game:GetService("Lighting"):GetPropertyChangedSignal("ClockTime"):Connect(function()
+            if game:GetService("Lighting").ClockTime ~= 12 and game:GetService("Lighting").ClockTime ~= _G.NormalLightingSettings.ClockTime then
+                _G.NormalLightingSettings.ClockTime = game:GetService("Lighting").ClockTime
+                if not _G.FullBrightEnabled then
+                    repeat
+                        wait()
+                    until _G.FullBrightEnabled
+                end
+                game:GetService("Lighting").ClockTime = 12
+            end
+        end)
+    
+        game:GetService("Lighting"):GetPropertyChangedSignal("FogEnd"):Connect(function()
+            if game:GetService("Lighting").FogEnd ~= 786543 and game:GetService("Lighting").FogEnd ~= _G.NormalLightingSettings.FogEnd then
+                _G.NormalLightingSettings.FogEnd = game:GetService("Lighting").FogEnd
+                if not _G.FullBrightEnabled then
+                    repeat
+                        wait()
+                    until _G.FullBrightEnabled
+                end
+                game:GetService("Lighting").FogEnd = 786543
+            end
+        end)
+    
+        game:GetService("Lighting"):GetPropertyChangedSignal("GlobalShadows"):Connect(function()
+            if game:GetService("Lighting").GlobalShadows ~= false and game:GetService("Lighting").GlobalShadows ~= _G.NormalLightingSettings.GlobalShadows then
+                _G.NormalLightingSettings.GlobalShadows = game:GetService("Lighting").GlobalShadows
+                if not _G.FullBrightEnabled then
+                    repeat
+                        wait()
+                    until _G.FullBrightEnabled
+                end
+                game:GetService("Lighting").GlobalShadows = false
+            end
+        end)
+    
+        game:GetService("Lighting"):GetPropertyChangedSignal("Ambient"):Connect(function()
+            if game:GetService("Lighting").Ambient ~= Color3.fromRGB(178, 178, 178) and game:GetService("Lighting").Ambient ~= _G.NormalLightingSettings.Ambient then
+                _G.NormalLightingSettings.Ambient = game:GetService("Lighting").Ambient
+                if not _G.FullBrightEnabled then
+                    repeat
+                        wait()
+                    until _G.FullBrightEnabled
+                end
+                game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+            end
+        end)
+    
+        game:GetService("Lighting").Brightness = 1
+        game:GetService("Lighting").ClockTime = 12
+        game:GetService("Lighting").FogEnd = 786543
+        game:GetService("Lighting").GlobalShadows = false
+        game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+    
+        local LatestValue = true
+        spawn(function()
+            repeat
+                wait()
+            until _G.FullBrightEnabled
+            while wait() do
+                if _G.FullBrightEnabled ~= LatestValue then
+                    if not _G.FullBrightEnabled then
+                        game:GetService("Lighting").Brightness = _G.NormalLightingSettings.Brightness
+                        game:GetService("Lighting").ClockTime = _G.NormalLightingSettings.ClockTime
+                        game:GetService("Lighting").FogEnd = _G.NormalLightingSettings.FogEnd
+                        game:GetService("Lighting").GlobalShadows = _G.NormalLightingSettings.GlobalShadows
+                        game:GetService("Lighting").Ambient = _G.NormalLightingSettings.Ambient
+                    else
+                        game:GetService("Lighting").Brightness = 1
+                        game:GetService("Lighting").ClockTime = 12
+                        game:GetService("Lighting").FogEnd = 786543
+                        game:GetService("Lighting").GlobalShadows = false
+                        game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+                    end
+                    LatestValue = not LatestValue
+                end
+            end
+        end)
+    end
+    
+    _G.FullBrightExecuted = true
+    _G.FullBrightEnabled = not _G.FullBrightEnabled
+    end)
+
+ -- Groupbox 3
+
+local ExampleButton = Groupbox3:CreateButton("Skin Changer", function()
+loadstring(game:HttpGet("https://pastebin.com/raw/jXW1EPgC", true))()
+end)  
+
+local ExampleButton1 = Groupbox3:CreateButton("TpWalk", function()
+    tpwalking = false
+	
+	game:GetService("UserInputService").InputBegan:Connect(function(input)
+		if input.KeyCode == Enum.KeyCode.LeftShift then
+			tpwalking = not tpwalking
+			local chr = game.Players.LocalPlayer.Character
+		local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+		while tpwalking and hum and hum.Parent do
+	wait()
+			if hum.MoveDirection.Magnitude > 0 then
+				chr:TranslateBy(hum.MoveDirection)
+			end
+		end
+		end
+	end)
+	
+	if input.KeyCode == Enum.KeyCode.LeftShift then
+	tpwalking = true
+	end
+	end)
+
+local ExampleToggle10 = Groupbox3:CreateToggle(
+    "Toggle Gui",
+    function(val)
+        MainGUI.Enabled = not MainGUI.Enabled
+    end
+):CreateKeyBind("Insert")
+
+ -- Groupbox 4
+
+local ExampleToggle11 = Groupbox4:CreateToggle("Enabled", function(value)
+    enabled1 = value
+end)
+
+local ExampleToggle12 = Groupbox4:CreateToggle("No Recoil", function(value)
+    for i,v in pairs (game:GetService("ReplicatedStorage").Weapons:GetDescendants()) do 
+        if v and v.Name ~= "C4" and v:FindFirstChild("Recoil") then 
+           v:FindFirstChild("Recoil").Value = 0
+        v:FindFirstChild("Recoil").AngleY.Value = 0
+        v:FindFirstChild("Recoil").AngleX.Value = 0
+        for i,v in next,debug.getregistry() do
+         if type(v) =='function'then
+          local i = debug.getupvalues(v)
+          debug.setupvalue(v,'RecoilX',0)
+          debug.setupvalue(v,'RecoilY',0)
+          end
+          end
+          end
+          end
+        end)
+
+local ExampleToggle13 = Groupbox4:CreateToggle("No Spread", function(value)
+    for i,v in pairs (game:GetService("ReplicatedStorage").Weapons:GetDescendants()) do
+        if v and v.Name ~= "C4" and v:FindFirstChild("Spread") then
+           v:FindFirstChild("Spread").Value = 0
+           v:FindFirstChild("Spread").Stand.Value = 0
+           v:FindFirstChild("Spread").MaxInaccuracy.Value = 0
+           v:FindFirstChild("Spread").Crouch.Value = 0
+           v:FindFirstChild("Spread").Move.Value = 0
+           v:FindFirstChild("Spread").Jump.Value = 0
+           v:FindFirstChild("Spread").Ladder.Value = 0
+           v:FindFirstChild("Spread").RecoveryTime.Value = 0
+           v:FindFirstChild("Spread").RecoveryTime.Crouched.Value = 0
+        end
+        end
+        end)
+local ExampleToggle14 = Groupbox4:CreateToggle("Inf Ammo", function(value)
+    for i,v in pairs (game:GetService("ReplicatedStorage").Weapons:GetDescendants()) do 
+        if v and v.Name ~= "C4" and v:FindFirstChild("Ammo") then 
+           v:FindFirstChild("Ammo").Value = 9999
+        v:FindFirstChild("StoredAmmo").Value = 9999
+        end
+        end
+        end)
+
+        local lp = game:GetService("Players").LocalPlayer
+        local client = getsenv(lp.PlayerGui.Client)
+        local spincurrent = 0
+        local hitpart = nil
+        game:GetService('RunService').RenderStepped:Connect(function()
+            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) and game:GetService("UserInputService"):GetFocusedTextBox() == nil then
+                if lp.Character and lp.Character:FindFirstChild('Humanoid') and lp.Character:FindFirstChild('HumanoidRootPart') then
+                    if lp.Character.HumanoidRootPart:FindFirstChild('gamervelocity') then
+                        lp.Character.HumanoidRootPart.gamervelocity.Velocity = (lp.Character.Humanoid.MoveDirection) * bhopspeed
+                        lp.Character.Humanoid.Jump = true
+                    else
+                        lp.Character.Humanoid.Jump = true
+                        local velocity = Instance.new('BodyVelocity', lp.Character.HumanoidRootPart)
+                        velocity.Name = 'gamervelocity'
+                        velocity.maxForce = Vector3.new(100000, 0, 100000)
+                        velocity.Velocity = (lp.Character.Humanoid.MoveDirection) * bhopspeed
+                    end
+                end
+            else
+                if lp.Character and lp.Character:FindFirstChild('Humanoid') and lp.Character:FindFirstChild('HumanoidRootPart') then
+                    if lp.Character.HumanoidRootPart:FindFirstChild('gamervelocity') then
+                        lp.Character.HumanoidRootPart.gamervelocity:Destroy()
+                    end
+                end
+            end
+        end)
+
+local ExampleToggle15 = Groupbox4:CreateToggle("Bhop", function(value)
+    enabledbh = value
+end)
+
+local ExampleSlider2 = Groupbox4:CreateSlider("Speed", 16, 40, 25, function(value)
+    bhopspeed = value
+end)
+
+local ExampleToggle16 = Groupbox4:CreateToggle("Inf Cash", function(value)
+    local CashLoop = true
+
+    function CashLoopF()
+        game.Players.LocalPlayer.Cash.Value = 9999999
+    end
+    
+    while CashLoop == true do
+        CashLoopF()
+        wait(0.5)
+    end
+end)
+print ("BlueBerry.gg Succesfully Loaded!")
